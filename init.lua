@@ -2,6 +2,7 @@ hs.hotkey.bind({"cmd", "alt", "ctrl"}, "W", function()
   hs.alert.show("Hello World!")
 end)
 
+-- this is for showing the current app's path, name and input method
 hs.hotkey.bind({"ctrl", "cmd"}, ".", function()
   hs.pasteboard.setContents(hs.window.focusedWindow():application():path())
   hs.alert.show("App path:        " ..
@@ -15,6 +16,7 @@ hs.hotkey.bind({"ctrl", "cmd"}, ".", function()
 end)
 
 -- this is for automatically switching input methods between apps
+-- INPUT METHOD##################################################################
 local function Chinese()
   hs.keycodes.currentSourceID("com.tencent.inputmethod.wetype.pinyin")
 end
@@ -28,28 +30,22 @@ local appInputMethod = {
   ['微信']  = Chinese,
   Raycast = English,
   QQ = Chinese,
+  CLion = English,
+  Code = English,
 }
 
 
--- activated 时切换到指定的输入法，deactivated 时恢复之前的状态
-currentID = ""
+-- activated 时切换到指定的输入法
 function applicationWatcher(appName, eventType, appObject)
     if (eventType == hs.application.watcher.activated) then
         for app, fn in pairs(appInputMethod) do
             if app == appName then
-                currentID = hs.keycodes.currentSourceID()
                 fn()
-            end
-        end
-    end
-    if eventType == hs.application.watcher.deactivated then
-        for app, fn in pairs(appInputMethod) do
-            if app == appName then
-                hs.keycodes.currentSourceID(currentID)
-                currentID = hs.keycodes.currentSourceID()
             end
         end
     end
 end
 
 appWatcher = hs.application.watcher.new(applicationWatcher):start()
+
+-- END HERE##################################################################
